@@ -63,7 +63,7 @@ const togglePasswordVisibility = () => {
 </template>
 <style scoped>
 .div-custom-input {
-  @apply relative mt-2 rounded-md shadow-sm;
+  @apply  rounded-md shadow-sm;
 }
 .input-container {
   @apply relative;

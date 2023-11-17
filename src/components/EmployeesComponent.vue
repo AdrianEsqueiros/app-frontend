@@ -4,42 +4,69 @@ import { useAuthStore, useListStore } from '@/stores'
 import CustomButton from './customComponents/CustomButton.vue'
 import CustomInput from './customComponents/CustomInput.vue'
 import CustomTable from './customComponents/CustomTable.vue'
+import CustomDropDown from './customComponents/CustomDropDown.vue'
 import IconDownload from './icons/IconDownload.vue'
 import IconPlus from './icons/IconPlus.vue'
 import IconRightArrow from './icons/IconRightArrow.vue'
 import IconLeftArrow from './icons/IconLeftArrow.vue'
-import IconDownArrow from './icons/IconDownArrow.vue'
 import IconSearch from './icons/IconSearch.vue'
+import IconClearFilter from './icons/IconClearFilter.vue'
+
 const authStore = useAuthStore()
 const totalPages = ref(0)
 const search = ref('')
 const invalidEmail = ref(false)
 const firtsLoad = ref(false)
+
+const selectedValue = ref('')
+const dropdownOptions = ref<string[]>([])
+
+const total = (total: number, perPage: number) => {
+  return Math.ceil(total / perPage)
+}
+
+const listStore = useListStore()
+
+const currentPage = computed(() => listStore.currentPage)
+const isLoaded = computed(() => listStore.isDataLoaded)
+const dataList = computed(() => listStore.filteredDataList)
+
 onMounted(async () => {
   authStore.checkAuthentication()
   try {
     await listStore.fetchData(10, 1)
     firtsLoad.value = true
     totalPages.value = total(listStore.totalPages, 10)
+    dropdownOptions.value = Array.from(new Set(dataList.value.map((item) => item.cargo)))
+    filterList() // Filtrar la lista inicialmente
   } catch (error: any) {
     console.error('Error al cargar la lista de empleados:', error.message)
   }
 })
-
-const total = (total: number, perPage: number) => {
-  return Math.ceil(total / perPage)
-}
-const listStore = useListStore()
-
-const currentPage = computed(() => listStore.currentPage)
-const isLoaded = computed(() => listStore.isDataLoaded)
-const dataList = computed(() => listStore.dataList)
 const handlePageChange = async (increment: number) => {
   try {
-    await listStore.fetchData(10, increment)
+    await listStore.fetchData(10, increment, selectedValue.value)
   } catch (error: any) {
     console.error('Error al cargar la lista de empleados:', error.message)
   }
+}
+
+const updateSelectedValue = (value: any) => {
+  selectedValue.value = value
+  // Llamar a una función para filtrar la lista cuando cambie el valor seleccionado
+  filterList()
+}
+const filterList = () => {
+  // Implementar lógica de filtrado aquí
+  if (selectedValue.value) {
+    listStore.filterByCargo(selectedValue.value)
+  } else {
+    listStore.resetFilter() // Si no hay un valor seleccionado, mostrar todos los elementos
+  }
+}
+const clearFilters = () => {
+  selectedValue.value = '' 
+  filterList()
 }
 </script>
 
@@ -57,6 +84,10 @@ const handlePageChange = async (increment: number) => {
         <CustomButton label="Nuevo" customClass="plus-btn">
           <IconPlus />
         </CustomButton>
+
+        <CustomButton @click="clearFilters" customClass="filter-btn ">
+          <IconClearFilter />
+        </CustomButton>
       </div>
     </div>
 
@@ -67,13 +98,13 @@ const handlePageChange = async (increment: number) => {
           <div class="h-10 bg-gray-200 rounded-full w-28"></div>
         </div>
       </div>
-      <div class="grid grid-cols-3 gap-4">
+      <div class="grid grid-cols-3 gap-4 my-7">
         <div v-for="col in 3" :key="col" class="h-6 bg-gray-200 rounded-full col-span-1"></div>
       </div>
     </div>
     <div>
-      <div class="grid grid-cols-3 gap-4 my-7">
-        <div class="col-span-2" >
+      <div v-if="isLoaded" class="grid grid-cols-3 gap-4 my-7 items-end">
+        <div class="col-span-2">
           <CustomInput
             v-model="search"
             type="search"
@@ -85,17 +116,18 @@ const handlePageChange = async (increment: number) => {
             <IconSearch />
           </CustomInput>
         </div>
-        <CustomInput
-          v-model="search"
-          type="search"
-          name="search"
-          id="search"
-          placeholder="Buscar empleado"
-          :error="invalidEmail"
-        >
-          <IconDownArrow />
-        </CustomInput>
+        <div class="col-span-1">
+          <div>
+            <CustomDropDown
+              placeholder="Nombre de cargo"
+              :value="selectedValue"
+              :options="dropdownOptions"
+              @update:modelValue="updateSelectedValue"
+            />
+          </div>
+        </div>
       </div>
+
       <CustomTable class="" :datalist="dataList" :isloaded="isLoaded" />
     </div>
     <div class="pagination" v-if="totalPages > 1">
@@ -127,6 +159,10 @@ p {
 }
 .plus-btn {
   @apply bg-gray-900 text-white  h-14 px-6;
+}
+.filter-btn {
+  @apply border px-6 h-14;
+  border-color:  #E03137
 }
 .pagination {
   @apply mt-4 flex items-center justify-center space-x-2;

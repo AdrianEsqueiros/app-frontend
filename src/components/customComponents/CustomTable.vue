@@ -19,7 +19,6 @@ const props = defineProps(['isloaded', 'datalist'])
 
 const isLoaded = computed(() => props.isloaded)
 const dataList = computed(() => props.datalist)
-
 </script>
 
 <template>
@@ -53,11 +52,11 @@ const dataList = computed(() => props.datalist)
           </td>
         </tr>
       </tbody>
-    </table>    
+    </table>
   </div>
- 
+
   <div v-else>
-    <div class="animate-pulse flex flex-col space-x-4">     
+    <div class="animate-pulse flex flex-col space-x-4">
       <div class="flex-1 space-y-6 py-1">
         <div class="space-y-3">
           <div class="h-14 bg-gray-50 rounded-full mt-2 flex items-center justify-center">
@@ -73,7 +72,7 @@ const dataList = computed(() => props.datalist)
       </div>
       <div class="flex-1 space-y-6 py-1">
         <div class="space-y-3">
-          <div v-for="index in 8" :key="index" class="px-8 py-2 grid grid-cols-6 gap-4 border-b">
+          <div v-for="index in 6" :key="index" class="px-8 py-2 grid grid-cols-6 gap-4 border-b">
             <div v-for="col in 6" :key="col" class="h-6 bg-gray-200 rounded-full col-span-1"></div>
           </div>
         </div>
@@ -85,8 +84,7 @@ const dataList = computed(() => props.datalist)
 <style scoped>
 .table-container {
   @apply overflow-auto;
-  max-height: 400px; 
-
+  max-height: 400px;
 }
 td {
   @apply border-b;
@@ -98,9 +96,7 @@ td {
 
 th {
   @apply sticky top-0 bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold p-4;
-  z-index: 1; /* Asegura que el encabezado aparezca sobre las celdas de datos */
-
-  /* @apply bg-gray-50 border-b-gray-50	 text-gray-600 font-bold p-4; */
+  z-index: 1;
 }
 
 th:nth-child(1) {
@@ -109,5 +105,4 @@ th:nth-child(1) {
 th:nth-child(6) {
   @apply rounded-s-lg;
 }
-
 </style>

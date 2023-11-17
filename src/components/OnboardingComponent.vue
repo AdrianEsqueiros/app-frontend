@@ -4,7 +4,11 @@ import IconLogoWhite from './icons/IconLogoWhite.vue'
 
 <template>
   <div class="container">
-    <img src="../assets/background.png" alt="background-img" class="object-cover h-3/4" />
+    <img
+      src="https://zest-rabbit-8f2.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fc84b9532-cc98-4a38-8a72-089299b971f8%2Flogin.png?table=block&id=292b4704-7ebe-4b53-86bc-fd7fae8ed04a&spaceId=9b5f5adc-bdbf-4252-b351-be96b496a091&width=2000&userId=&cache=v2"
+      alt="background-img"
+      class="object-cover h-3/4"
+    />
     <div class="message-div">
       <IconLogoWhite />
       <h1>Dale más power ⚡ a tus empleados hoy 💪</h1>
@@ -22,7 +26,7 @@ p {
   @apply text-white;
 }
 .container {
-  @apply flex flex-col h-screen bg-gray-900 ;
+  @apply flex flex-col h-screen bg-gray-900;
 }
 .message-div {
   @apply flex flex-col justify-center items-start  p-12  border-t-4 border-t-emerald-600;
