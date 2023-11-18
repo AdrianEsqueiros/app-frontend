@@ -19,7 +19,7 @@ const initialListState: ListState = {
   totalPages: 0,
   isDataLoaded: false,
   currentPage: 1,
-  itemsPerPage: 10,
+  itemsPerPage: 5,
   optionsFilter: []
 }
 
@@ -32,7 +32,8 @@ export const useListStore = defineStore({
         this.isDataLoaded = false
         const listData = await getListData(limit, page)
         this.dataList = listData.data
-        this.totalPages = this.getTotalPages(listData.total)
+        this.totalPages = Math.ceil(listData.total / limit)
+        this.itemsPerPage = limit
         this.optionsFilter = this.dataList.map((item) => item.cargo)
         this.isDataLoaded = true
       } catch (error) {
@@ -72,13 +73,14 @@ export const useListStore = defineStore({
       const newPage = this.currentPage + increment
       if (newPage >= 1 && newPage <= this.totalPages) {
         this.currentPage = newPage
-
-        // Llama a fetchData con el filtro de cargo actual si está presente
         if (this.filteredDataList !== this.dataList) {
           this.fetchData(this.itemsPerPage, newPage)
         }
       }
       return this.currentPage
-    }
+    },
+
+
+    
   }
 })

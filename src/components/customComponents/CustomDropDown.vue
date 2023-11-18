@@ -48,7 +48,7 @@ const selectOption = (option: string) => {
 }
 
 .dropdown {
-  @apply absolute w-full mt-1 bg-white rounded-md shadow-lg;
+  @apply absolute mt-1 bg-white rounded-md shadow-lg;
   z-index: 1000;
 }
 

@@ -92,14 +92,14 @@ const dataList = computed(() => props.datalist)
 <style scoped>
 .table-container {
   @apply overflow-auto;
-  max-height: 400px;
+  max-height: 470px;
 }
 td {
   @apply border-b;
 }
 th,
 td {
-  @apply text-left py-4 px-4;
+  @apply text-left py-3 px-4;
 }
 
 th {

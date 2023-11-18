@@ -17,10 +17,13 @@ const search = ref('')
 const firtsLoad = ref(false)
 const selectedValue = ref('')
 const listStore = useListStore()
+const itemsPerPage = ref(5)
+const countPerPage = [5, 15, 30]
+
 onMounted(async () => {
   authStore.checkAuthentication()
   try {
-    await listStore.fetchData(10, 1)
+    await listStore.fetchData(5, 1)
     firtsLoad.value = true
     filterList() // Filtrar la lista inicialmente
   } catch (error: any) {
@@ -28,20 +31,34 @@ onMounted(async () => {
   }
 })
 
-
 const totalPages = computed(() => listStore.totalPages)
 const currentPage = computed(() => listStore.currentPage)
 const isLoaded = computed(() => listStore.isDataLoaded)
 const dataList = computed(() => listStore.filteredDataList)
 const filterOptions = computed(() => listStore.optionsFilter)
 
-const handlePageChange = async (increment: number) => {
+const changeItemsPerPage = async (value: any) => {
+  itemsPerPage.value = value
   try {
-    await listStore.fetchData(10, increment)
+    await listStore.fetchData(itemsPerPage.value, 1)
     clearFilters()
   } catch (error: any) {
     console.error('Error al cargar la lista de empleados:', error.message)
   }
+}
+
+const handlePageChange = async (increment: number) => {
+  try {
+    await listStore.fetchData(itemsPerPage.value, increment)
+    clearFilters()
+  } catch (error: any) {
+    console.error('Error al cargar la lista de empleados:', error.message)
+  }
+}
+
+const updatePerPage = (value: any) => {
+  itemsPerPage.value = value
+  changeItemsPerPage(value)
 }
 
 const updateSelectedValue = (value: any) => {
@@ -57,7 +74,6 @@ const filterList = () => {
 }
 
 const filterSearch = () => {
-  console.log('search', search.value)
   if (search.value) {
     listStore.filterBySearch(search.value)
   } else {
@@ -144,6 +160,13 @@ const clearFilters = () => {
       >
         <IconRightArrow />
       </CustomButton>
+      <div class="flex">
+        <CustomDropDown
+        :value="itemsPerPage"
+        :options="countPerPage"
+        @update:modelValue="updatePerPage"
+        />
+      </div>
     </div>
   </div>
 </template>
