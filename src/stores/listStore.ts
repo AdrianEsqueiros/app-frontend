@@ -10,12 +10,14 @@ interface ListState {
   isDataLoaded?: boolean
   currentPage: number
   itemsPerPage: number
+  total:number
   optionsFilter: string[]
 }
 
 const initialListState: ListState = {
   dataList: [],
   filteredDataList: [], // Inicialmente, la lista filtrada es la misma que la lista completa
+  total:0,
   totalPages: 0,
   isDataLoaded: false,
   currentPage: 1,
@@ -32,6 +34,7 @@ export const useListStore = defineStore({
         this.isDataLoaded = false
         const listData = await getListData(limit, page)
         this.dataList = listData.data
+        this.total= listData.total
         this.totalPages = Math.ceil(listData.total / limit)
         this.itemsPerPage = limit
         this.optionsFilter = this.dataList.map((item) => item.cargo)

@@ -35,7 +35,7 @@ const isActive = (name: string) => {
           <CustomButton
             @click="handleClick('employees')"
             label="Empleados"
-            customClass="button-class"
+            :customClass="isActive('employees')?'text-emerald-600 button-class':'button-class'"
             :active="isActive('employees')"
           >
             <IconUsers />
@@ -45,7 +45,7 @@ const isActive = (name: string) => {
           <CustomButton
             @click="handleClick('recruitment')"
             label="Reclutamiento"
-            customClass="button-class"
+            :customClass="isActive('recruitment')?'text-emerald-600 button-class':'button-class'"
             :active="isActive('recruitment')"
           >
             <IconBriefCase />
@@ -56,7 +56,8 @@ const isActive = (name: string) => {
         <CustomButton
           @click="handleClick('home')"
           label="Cerrar sesión"
-          customClass="logout-button"
+          :customClass="isActive('home')?'text-emerald-600':'logout-button'"
+          
           :active="isActive('home')"
         />
       </div>
@@ -65,7 +66,7 @@ const isActive = (name: string) => {
 </template>
 <style scoped>
 .button-class {
-  @apply text-xl ml-2 font-semibold gap-2;
+  @apply text-xl ml-2 font-semibold gap-2 ;
 }
 .sidebar {
   @apply flex flex-col w-full h-screen p-4 border-r-2 border-gray-300;

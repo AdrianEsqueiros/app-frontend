@@ -30,7 +30,7 @@ onMounted(async () => {
     console.error('Error al cargar la lista de empleados:', error.message)
   }
 })
-
+const total = computed(() => listStore.total)
 const totalPages = computed(() => listStore.totalPages)
 const currentPage = computed(() => listStore.currentPage)
 const isLoaded = computed(() => listStore.isDataLoaded)
@@ -50,6 +50,15 @@ const changeItemsPerPage = async (value: any) => {
 const handlePageChange = async (increment: number) => {
   try {
     await listStore.fetchData(itemsPerPage.value, increment)
+    clearFilters()
+  } catch (error: any) {
+    console.error('Error al cargar la lista de empleados:', error.message)
+  }
+}
+
+const goToPage = async (page: number) => {
+  try {
+    await listStore.fetchData(itemsPerPage.value, page)
     clearFilters()
   } catch (error: any) {
     console.error('Error al cargar la lista de empleados:', error.message)
@@ -85,10 +94,27 @@ const clearFilters = () => {
   search.value = ''
   listStore.resetFilter()
 }
+
+const visiblePages = computed(() => {
+  const totalVisiblePages = 4
+  let startPage = Math.max(1, currentPage.value - Math.floor(totalVisiblePages / 2))
+  let endPage = Math.min(totalPages.value, startPage + totalVisiblePages - 1)
+
+  if (endPage - startPage + 1 < totalVisiblePages) {
+    startPage = Math.max(1, endPage - totalVisiblePages + 1)
+  }
+
+  const pages = []
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i)
+  }
+
+  return pages
+})
 </script>
 
 <template>
-  <div class="flex flex-col bg-white p-8 w-full m-4 gap-2">
+  <div class="flex flex-col bg-white p-8  w-full m-4 gap-2">
     <div v-if="firtsLoad" class="flex justify-between">
       <div class="flex flex-col">
         <h1>Empleados</h1>
@@ -107,7 +133,6 @@ const clearFilters = () => {
         </CustomButton>
       </div>
     </div>
-
     <div v-else class="gap-2">
       <div class="flex justify-between mb-2">
         <h1>Empleados</h1>
@@ -146,31 +171,60 @@ const clearFilters = () => {
       </div>
       <CustomTable class="" :datalist="dataList" :isloaded="isLoaded" />
     </div>
-    <div class="pagination" v-if="totalPages > 1">
-      <CustomButton
-        @click="handlePageChange(listStore.changePage(-1))"
-        :disabled="currentPage === 1"
-      >
-        <IconLeftArrow />
-      </CustomButton>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <CustomButton
-        @click="handlePageChange(listStore.changePage(1))"
-        :disabled="currentPage === totalPages"
-      >
-        <IconRightArrow />
-      </CustomButton>
-      <div class="flex">
-        <CustomDropDown
-        :value="itemsPerPage"
-        :options="countPerPage"
-        @update:modelValue="updatePerPage"
-        />
+    <div class="grid grid-cols-2 gap-4 items-center " v-if="totalPages > 1">
+      <div class="flex col-span-1 gap-2 justify-center">
+        <div class="flex items-center justify-center">
+          <CustomButton
+            customClass="border border-gray-200 p-2"
+            @click="handlePageChange(listStore.changePage(-1))"
+            :disabled="currentPage === 1"
+          >
+            <IconLeftArrow />
+          </CustomButton>
+
+          <div v-for="item in visiblePages" :key="item" class=" space-x-2">
+            <CustomButton
+              
+              :customClass=" 'border border-gray-200 mx-auto p-2 '"
+              @click="goToPage(item)"
+              :disabled="currentPage === item"
+              :active="currentPage === item"
+            >
+              {{ item }}
+            </CustomButton>
+          </div>
+
+          <CustomButton
+            customClass="border border-gray-200 p-2"
+            @click="handlePageChange(listStore.changePage(1))"
+            :disabled="currentPage === totalPages"
+          >
+            <IconRightArrow />
+          </CustomButton>
+        </div>
+      </div>
+
+      <div class="col-span-1 flex justify-end">
+        <div class="flex items-center justify-between gap-4">
+          <span class=""
+            >Mostrando {{ dataList.length ? 1 : 0 }} a {{ dataList.length }} de
+            {{ total }} registros</span
+          >
+          <CustomDropDown
+            class="w-24"
+            :value="itemsPerPage"
+            :options="countPerPage"
+            @update:modelValue="updatePerPage"
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
 <style>
+.footer{
+  @apply mt-4 flex items-center justify-center;
+}
 h1 {
   @apply text-xl font-semibold;
 }
@@ -190,7 +244,12 @@ p {
 .pagination {
   @apply mt-4 flex items-center justify-center space-x-2;
 }
-
+.pagination button{
+  @apply px-2 py-1 rounded-md bg-gray-50 cursor-pointer;
+}
+.is-active {
+  @apply border border-gray-200 mx-auto p-2 bg-emerald-600 text-white
+}
 .pagination button {
   @apply px-2 py-1 rounded-md bg-gray-50 cursor-pointer;
 }

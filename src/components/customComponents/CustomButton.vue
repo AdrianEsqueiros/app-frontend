@@ -15,7 +15,7 @@ const { label, customClass, active } = defineProps(['label', 'customClass', 'act
 }
 
 .active {
-  @apply text-emerald-600;
+  @apply text-emerald-600 ;
 }
 
 </style>
