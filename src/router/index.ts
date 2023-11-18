@@ -1,8 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
-// import { useAuthStore } from '@/stores';
-
-
-// const authStore = useAuthStore();
+import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,7 +6,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import ('../views/SignIn.vue')
+      component: () => import('../views/SignIn.vue')
     },
     {
       path: '/dashboard',
@@ -24,34 +20,38 @@ const router = createRouter({
           path: 'employees',
           name: 'employees',
           meta: {
-            requiresAuth: true,
+            requiresAuth: true
           },
-          component: () => import('../components/EmployeesComponent.vue'),
+          component: () => import('../components/EmployeesComponent.vue')
         },
         {
           path: 'recruitment',
           name: 'recruitment',
           meta: {
-            requiresAuth: true,
+            requiresAuth: true
           },
-          component: () => import('../components/RecuitmentComponent.vue'),
-        },
-      ],
+          component: () => import('../components/RecruitmentComponent.vue')
+        }
+      ]
     },
-    
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/dashboard'
+    }
   ]
 })
 
 router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth) {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('authToken')
     if (token) {
-      next();
+      next()
     } else {
-      next('/');
+      next('/')
     }
   } else {
-    next();
+    next()
   }
-});
+})
+
 export default router

@@ -13,38 +13,27 @@ import IconSearch from './icons/IconSearch.vue'
 import IconClearFilter from './icons/IconClearFilter.vue'
 
 const authStore = useAuthStore()
-const totalPages = ref(0)
 const search = ref('')
 const firtsLoad = ref(false)
 const selectedValue = ref('')
-
-const total = (total: number, perPage: number) => {
-  return Math.ceil(total / perPage)
-}
-
 const listStore = useListStore()
-
-const currentPage = computed(() => listStore.currentPage)
-const isLoaded = computed(() => listStore.isDataLoaded)
-const dataList = computed(() => listStore.filteredDataList)
-const filterOptions = computed(() => listStore.optionsFilter)
-// const handleSearch = () => {
-//   if (search.value) {
-//     invalidEmail.value = false
-//     listStore.filterBySearch(search.value)
-//   }
-// }
 onMounted(async () => {
   authStore.checkAuthentication()
   try {
     await listStore.fetchData(10, 1)
     firtsLoad.value = true
-    totalPages.value = total(listStore.totalPages, 10)
     filterList() // Filtrar la lista inicialmente
   } catch (error: any) {
     console.error('Error al cargar la lista de empleados:', error.message)
   }
 })
+
+
+const totalPages = computed(() => listStore.totalPages)
+const currentPage = computed(() => listStore.currentPage)
+const isLoaded = computed(() => listStore.isDataLoaded)
+const dataList = computed(() => listStore.filteredDataList)
+const filterOptions = computed(() => listStore.optionsFilter)
 
 const handlePageChange = async (increment: number) => {
   try {
@@ -66,10 +55,19 @@ const filterList = () => {
     listStore.resetFilter()
   }
 }
+
+const filterSearch = () => {
+  console.log('search', search.value)
+  if (search.value) {
+    listStore.filterBySearch(search.value)
+  } else {
+    listStore.resetFilter()
+  }
+}
 const clearFilters = () => {
   selectedValue.value = ''
   search.value = ''
-  listStore.resetFilter()  
+  listStore.resetFilter()
 }
 </script>
 
@@ -114,7 +112,7 @@ const clearFilters = () => {
             name="search"
             id="search"
             placeholder="Buscar empleado"
-            
+            @input="filterSearch"
           >
             <IconSearch />
           </CustomInput>

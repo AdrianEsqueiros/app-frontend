@@ -32,7 +32,7 @@ export const useListStore = defineStore({
         this.isDataLoaded = false
         const listData = await getListData(limit, page)
         this.dataList = listData.data
-        this.totalPages = listData.total
+        this.totalPages = this.getTotalPages(listData.total)
         this.optionsFilter = this.dataList.map((item) => item.cargo)
         this.isDataLoaded = true
       } catch (error) {
@@ -41,16 +41,18 @@ export const useListStore = defineStore({
         throw new Error('Error al obtener la lista de empleados')
       }
     },
-    filterByCargo(cargo: string): void {      
+    filterByCargo(cargo: string): void {
       this.filteredDataList = this.dataList.filter((item) => item.cargo === cargo)
     },
-    // filterBySearch(search: string): void {
-    //   this.filteredDataList = this.dataList.filter((item) => {
-    //     item.correo === search
-    //     console.log(item.correo)
-    //   })
-    // },
-
+    // filter by nombre or correo
+    filterBySearch(search: string): void {
+      this.filteredDataList = this.dataList.filter((item) => {
+        const nombre = item.nombre.toLowerCase()
+        const correo = item.correo.toLowerCase()
+        const searchValue = search.toLowerCase()
+        return nombre.includes(searchValue) || correo.includes(searchValue)
+      })
+    },
     resetFilter(): void {
       this.filteredDataList = this.dataList
     },
@@ -63,7 +65,9 @@ export const useListStore = defineStore({
         return []
       }
     },
-
+    getTotalPages(count: number): number {
+      return Math.ceil(count / this.itemsPerPage)
+    },
     changePage(increment: number): number {
       const newPage = this.currentPage + increment
       if (newPage >= 1 && newPage <= this.totalPages) {
