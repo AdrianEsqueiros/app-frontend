@@ -71,7 +71,7 @@ export const useListStore = defineStore({
 
         // Llama a fetchData con el filtro de cargo actual si está presente
         if (this.filteredDataList !== this.dataList) {
-          this.fetchData(this.itemsPerPage, newPage, this.filteredDataList[0].cargo)
+          this.fetchData(this.itemsPerPage, newPage)
         }
       }
       return this.currentPage
