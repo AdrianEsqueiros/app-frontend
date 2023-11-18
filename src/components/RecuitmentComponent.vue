@@ -8,7 +8,6 @@ const totalPages = ref(0)
 onMounted(async () => {
   authStore.checkAuthentication()
   try {
-    // await listStore.fetchData(10, 1)
     totalPages.value = total(listStore.totalPages, 10)
   } catch (error: any) {
     console.error('Error al cargar la lista de empleados:', error.message)

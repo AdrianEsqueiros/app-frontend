@@ -16,7 +16,6 @@ const userInitials = computed(() => {
       .map((word) => word[0].toUpperCase())
       .join('')
   } else {
-    // Manejar el caso en el que authStore.user es undefined
     return ''
   }
 })

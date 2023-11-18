@@ -8,7 +8,7 @@ import IconRemove from '../icons/IconRemove.vue'
 
 const headers = ['Nombre', 'Nombre Cargo', 'Departamento', 'Oficina', 'Cuenta']
 const columns = [
-  { key: 'nombre' },
+  { key: 'nombre|correo' },
   { key: 'cargo' },
   { key: 'departamento' },
   { key: 'oficina' },
@@ -35,6 +35,14 @@ const dataList = computed(() => props.datalist)
       <tbody>
         <tr v-for="item in dataList" :key="item.id">
           <td v-for="column in columns" :key="column.key">
+            <div v-if="column.key === 'nombre|correo'" class="flex flex-col">
+              <div>
+                {{ item.nombre }}
+              </div>
+              <div class="text-gray-500 font-medium">
+                {{ item.correo }}
+              </div>
+            </div>
             <div v-if="column.key === 'acciones'" class="flex gap-4 justify-end">
               <div class="flex gap-4 justify-end">
                 <CustomButton>

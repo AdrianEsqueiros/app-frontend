@@ -15,11 +15,8 @@ import IconClearFilter from './icons/IconClearFilter.vue'
 const authStore = useAuthStore()
 const totalPages = ref(0)
 const search = ref('')
-const invalidEmail = ref(false)
 const firtsLoad = ref(false)
-
 const selectedValue = ref('')
-const dropdownOptions = ref<string[]>([])
 
 const total = (total: number, perPage: number) => {
   return Math.ceil(total / perPage)
@@ -30,22 +27,29 @@ const listStore = useListStore()
 const currentPage = computed(() => listStore.currentPage)
 const isLoaded = computed(() => listStore.isDataLoaded)
 const dataList = computed(() => listStore.filteredDataList)
-
+const filterOptions = computed(() => listStore.optionsFilter)
+// const handleSearch = () => {
+//   if (search.value) {
+//     invalidEmail.value = false
+//     listStore.filterBySearch(search.value)
+//   }
+// }
 onMounted(async () => {
   authStore.checkAuthentication()
   try {
     await listStore.fetchData(10, 1)
     firtsLoad.value = true
     totalPages.value = total(listStore.totalPages, 10)
-    dropdownOptions.value = Array.from(new Set(dataList.value.map((item) => item.cargo)))
     filterList() // Filtrar la lista inicialmente
   } catch (error: any) {
     console.error('Error al cargar la lista de empleados:', error.message)
   }
 })
+
 const handlePageChange = async (increment: number) => {
   try {
-    await listStore.fetchData(10, increment, selectedValue.value)
+    await listStore.fetchData(10, increment)
+    clearFilters()
   } catch (error: any) {
     console.error('Error al cargar la lista de empleados:', error.message)
   }
@@ -53,20 +57,19 @@ const handlePageChange = async (increment: number) => {
 
 const updateSelectedValue = (value: any) => {
   selectedValue.value = value
-  // Llamar a una función para filtrar la lista cuando cambie el valor seleccionado
   filterList()
 }
 const filterList = () => {
-  // Implementar lógica de filtrado aquí
   if (selectedValue.value) {
     listStore.filterByCargo(selectedValue.value)
   } else {
-    listStore.resetFilter() // Si no hay un valor seleccionado, mostrar todos los elementos
+    listStore.resetFilter()
   }
 }
 const clearFilters = () => {
-  selectedValue.value = '' 
-  filterList()
+  selectedValue.value = ''
+  search.value = ''
+  listStore.resetFilter()  
 }
 </script>
 
@@ -103,15 +106,15 @@ const clearFilters = () => {
       </div>
     </div>
     <div>
-      <div v-if="isLoaded" class="grid grid-cols-3 gap-4 my-7 items-end">
+      <div v-if="firtsLoad" class="grid grid-cols-3 gap-4 my-7 items-end">
         <div class="col-span-2">
           <CustomInput
             v-model="search"
-            type="search"
+            type="text"
             name="search"
             id="search"
             placeholder="Buscar empleado"
-            :error="invalidEmail"
+            
           >
             <IconSearch />
           </CustomInput>
@@ -121,13 +124,12 @@ const clearFilters = () => {
             <CustomDropDown
               placeholder="Nombre de cargo"
               :value="selectedValue"
-              :options="dropdownOptions"
+              :options="filterOptions"
               @update:modelValue="updateSelectedValue"
             />
           </div>
         </div>
       </div>
-
       <CustomTable class="" :datalist="dataList" :isloaded="isLoaded" />
     </div>
     <div class="pagination" v-if="totalPages > 1">
@@ -162,7 +164,7 @@ p {
 }
 .filter-btn {
   @apply border px-6 h-14;
-  border-color:  #E03137
+  border-color: #e03137;
 }
 .pagination {
   @apply mt-4 flex items-center justify-center space-x-2;

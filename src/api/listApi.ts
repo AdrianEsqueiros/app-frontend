@@ -9,7 +9,6 @@ export async function getListData(limit: number = 10, page: number = 1): Promise
     const bearerToken = localStorage.getItem('authToken')
     const headers = { Authorization: `Bearer ${bearerToken}` }
 
-    // Add query parameters for pagination
     const params = { limit, page }
 
     const response = await useHttpClient().get(endpoint, { headers, params })

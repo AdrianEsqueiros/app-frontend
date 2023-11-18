@@ -1,17 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits } from 'vue'
+import { ref, defineProps, defineEmits } from 'vue'
 import IconDownArrow from '../icons/IconDownArrow.vue'
 
-const props = defineProps([
-  'label',
-  'value',
-  'type',
-  'name',
-  'id',
-  'placeholder',
-  'error',
-  'options'
-])
+const props = defineProps(['value', 'id', 'placeholder', 'options'])
 const emits = defineEmits(['update:modelValue'])
 
 const showDropdown = ref(false)
@@ -39,8 +30,8 @@ const selectOption = (option: string) => {
     </button>
 
     <!-- Dropdown -->
-    <div v-if="showDropdown" class="dropdown ">
-      <ul >
+    <div v-if="showDropdown" class="dropdown">
+      <ul>
         <li v-for="(option, index) in props.options" :key="index" @click="selectOption(option)">
           {{ option }}
         </li>
@@ -57,7 +48,7 @@ const selectOption = (option: string) => {
 }
 
 .dropdown {
-  @apply absolute w-full mt-1 bg-white rounded-md shadow-lg 	 ;
+  @apply absolute w-full mt-1 bg-white rounded-md shadow-lg;
   z-index: 1000;
 }
 
@@ -72,5 +63,4 @@ const selectOption = (option: string) => {
 .dropdown li:hover {
   @apply bg-gray-600 text-white;
 }
-
 </style>

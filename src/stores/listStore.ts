@@ -10,6 +10,7 @@ interface ListState {
   isDataLoaded?: boolean
   currentPage: number
   itemsPerPage: number
+  optionsFilter: string[]
 }
 
 const initialListState: ListState = {
@@ -18,28 +19,21 @@ const initialListState: ListState = {
   totalPages: 0,
   isDataLoaded: false,
   currentPage: 1,
-  itemsPerPage: 10
+  itemsPerPage: 10,
+  optionsFilter: []
 }
 
 export const useListStore = defineStore({
   id: 'list',
   state: () => ({ ...initialListState }),
   actions: {
-    async fetchData(limit: number = 10, page: number = 1, cargoFilter?: string): Promise<void> {
+    async fetchData(limit: number = 10, page: number = 1): Promise<void> {
       try {
         this.isDataLoaded = false
         const listData = await getListData(limit, page)
         this.dataList = listData.data
         this.totalPages = listData.total
-
-        // Aplicar el filtro de cargo si se proporciona
-        if (cargoFilter) {
-          this.filterByCargo(cargoFilter)
-        } else {
-          this.resetFilter()
-        }
-
-        console.log(this.totalPages)
+        this.optionsFilter = this.dataList.map((item) => item.cargo)
         this.isDataLoaded = true
       } catch (error) {
         this.isDataLoaded = false
@@ -47,17 +41,18 @@ export const useListStore = defineStore({
         throw new Error('Error al obtener la lista de empleados')
       }
     },
-    filterByCargo(cargo: string): void {
-      // Filtrar la lista por el valor de cargo
+    filterByCargo(cargo: string): void {      
       this.filteredDataList = this.dataList.filter((item) => item.cargo === cargo)
-      console.log(this.filteredDataList)
-      this.currentPage = 1
     },
+    // filterBySearch(search: string): void {
+    //   this.filteredDataList = this.dataList.filter((item) => {
+    //     item.correo === search
+    //     console.log(item.correo)
+    //   })
+    // },
 
     resetFilter(): void {
-      // Reiniciar el filtro mostrando la lista completa
       this.filteredDataList = this.dataList
-      this.currentPage = 1 // Volver a la primera página al reiniciar el filtro
     },
     get itemsToShow(): Datum[] {
       if (this.filteredDataList) {

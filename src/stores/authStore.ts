@@ -24,7 +24,6 @@ export const useAuthStore = defineStore({
         const userAuth = await login(correo, password)
         this.isAuthenticated = true
         this.user = userAuth.data.user
-        // Guardar el token en localStorage
         localStorage.setItem('authToken', userAuth.data.token)
         localStorage.setItem('authState', JSON.stringify(this.$state))
       } catch (error:any) {
@@ -45,7 +44,6 @@ export const useAuthStore = defineStore({
       }
     },
 
-    // Método para verificar la autenticación al cargar la aplicación
     checkAuthentication(): void {
       const storedState = localStorage.getItem('authState')
       if (storedState) {
