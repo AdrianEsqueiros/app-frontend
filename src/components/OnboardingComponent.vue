@@ -5,11 +5,11 @@ import IconBackground from './icons/IconBackground.vue'
 
 <template>
   <div class="container">
-    <div class=" ">
-      <IconBackground class="w-full"/>
+    <div class="flex justify-center items-center h-full">
+      <IconBackground />
     </div>
 
-    <div class="message-div">
+    <div class="message-div ">
       <IconLogoWhite />
       <h1>Dale más power ⚡ a tus empleados hoy 💪</h1>
       <p>Te ayudamos a gestionarlos de manera más sencilla</p>
@@ -26,7 +26,7 @@ p {
   @apply text-white;
 }
 .container {
-  @apply flex flex-col h-screen bg-gray-900;
+  @apply flex flex-col h-screen  bg-gray-900;
 }
 .message-div {
   @apply flex flex-col justify-center items-start  p-12  border-t-4 border-t-emerald-600;

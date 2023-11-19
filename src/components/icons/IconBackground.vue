@@ -2,9 +2,8 @@
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
-    width="auto"
-    height="auto"
-    viewBox="0 0 1364 1238"
+
+    viewBox="0 0 1364 1000"
     fill="none"
   >
     <path d="M0 0H1364V1238H0V0Z" fill="url(#pattern0)" />
