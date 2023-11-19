@@ -25,8 +25,9 @@ h1,
 p {
   @apply text-white;
 }
+
 .container {
-  @apply flex flex-col h-screen  bg-gray-900;
+  @apply flex flex-col h-full  bg-gray-900;
 }
 .message-div {
   @apply flex flex-col justify-center items-start  p-12  border-t-4 border-t-emerald-600;
