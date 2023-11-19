@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import IconDownArrow from '../icons/IconDownArrow.vue'
 
-const props = defineProps(['value', 'id', 'placeholder', 'options'])
+const props = defineProps(['value', 'id', 'label', 'placeholder', 'options', 'dropDirection'])
 const emits = defineEmits(['update:modelValue'])
 
 const showDropdown = ref(false)
@@ -18,19 +17,18 @@ const selectOption = (option: string) => {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="flex flex-col relative">
     <!-- Dropdown Trigger Button -->
-    <button @click="toggleDropdown" class="dropdown-trigger">
-      <div>
-        {{ props.value || props.placeholder }}
-      </div>
-      <div class="">
-        <IconDownArrow />
-      </div>
-    </button>
-
-    <!-- Dropdown -->
-    <div v-if="showDropdown" class="dropdown">
+    <div>
+      <button @click="toggleDropdown" class="dropdown-trigger">
+        <span v-if="label">{{ label }}</span>
+        <div>
+          {{ props.value || props.placeholder }}
+        </div>
+        <slot />
+      </button>
+    </div>
+    <div v-if="showDropdown" :class="dropDirection" class="dropdown">
       <ul>
         <li v-for="(option, index) in props.options" :key="index" @click="selectOption(option)">
           {{ option }}
@@ -38,6 +36,8 @@ const selectOption = (option: string) => {
       </ul>
     </div>
   </div>
+
+  <!-- Dropdown -->
 </template>
 
 <style scoped>
@@ -48,16 +48,16 @@ const selectOption = (option: string) => {
 }
 
 .dropdown {
-  @apply absolute mt-1 bg-white rounded-md shadow-lg;
+  @apply bg-white rounded-md shadow-lg absolute  w-full;
   z-index: 1000;
 }
 
 .dropdown ul {
-  @apply py-1 overflow-auto text-base leading-6 rounded-md shadow-sm max-h-32 focus:outline-none sm:text-sm sm:leading-5;
+  @apply overflow-auto  leading-6 rounded-md shadow-sm max-h-32 focus:outline-none sm:text-sm sm:leading-5;
 }
 
 .dropdown li {
-  @apply cursor-pointer select-none relative py-2 pl-3 pr-9;
+  @apply cursor-pointer select-none  py-2 pl-3 pr-9;
 }
 
 .dropdown li:hover {

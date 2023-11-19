@@ -63,7 +63,7 @@ const dataList = computed(() => props.datalist)
     </table>
   </div>
 
-  <div v-else>
+  <div v-else class="table-container">
     <div class="animate-pulse flex flex-col space-x-4">
       <div class="flex-1 space-y-6 py-1">
         <div class="space-y-3">
@@ -80,7 +80,7 @@ const dataList = computed(() => props.datalist)
       </div>
       <div class="flex-1 space-y-6 py-1">
         <div class="space-y-3">
-          <div v-for="index in 6" :key="index" class="px-8 py-2 grid grid-cols-6 gap-4 border-b">
+          <div v-for="index in 7" :key="index" class="px-8 py-2 grid grid-cols-6 gap-4 border-b">
             <div v-for="col in 6" :key="col" class="h-6 bg-gray-200 rounded-full col-span-1"></div>
           </div>
         </div>
@@ -92,7 +92,7 @@ const dataList = computed(() => props.datalist)
 <style scoped>
 .table-container {
   @apply overflow-auto;  
-  max-height: 480px;
+  height: 470px;
 }
 td {
   @apply border-b;

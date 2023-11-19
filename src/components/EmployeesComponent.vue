@@ -9,6 +9,8 @@ import IconDownload from './icons/IconDownload.vue'
 import IconPlus from './icons/IconPlus.vue'
 import IconRightArrow from './icons/IconRightArrow.vue'
 import IconLeftArrow from './icons/IconLeftArrow.vue'
+import IconUpArrow from './icons/IconUpArrow.vue'
+import IconDownArrow from './icons/IconDownArrow.vue'
 import IconSearch from './icons/IconSearch.vue'
 import IconClearFilter from './icons/IconClearFilter.vue'
 
@@ -47,18 +49,14 @@ const changeItemsPerPage = async (value: any) => {
   }
 }
 
-const handlePageChange = async (increment: number) => {
+const handlePageChange = async (increment: number, page: number = currentPage.value) => {
   try {
-    await listStore.fetchData(itemsPerPage.value, increment)
-    clearFilters()
-  } catch (error: any) {
-    console.error('Error al cargar la lista de empleados:', error.message)
-  }
-}
-
-const goToPage = async (page: number) => {
-  try {
-    await listStore.fetchData(itemsPerPage.value, page)
+    if (page !== currentPage.value) {
+      await listStore.fetchData(itemsPerPage.value, page)
+      listStore.currentPage = page
+    } else {
+      await listStore.fetchData(itemsPerPage.value, increment)
+    }
     clearFilters()
   } catch (error: any) {
     console.error('Error al cargar la lista de empleados:', error.message)
@@ -89,6 +87,7 @@ const filterSearch = () => {
     listStore.resetFilter()
   }
 }
+
 const clearFilters = () => {
   selectedValue.value = ''
   search.value = ''
@@ -96,15 +95,20 @@ const clearFilters = () => {
 }
 
 const visiblePages = computed(() => {
-  const totalVisiblePages = 4
-  let startPage = Math.max(1, currentPage.value - Math.floor(totalVisiblePages / 2))
-  let endPage = Math.min(totalPages.value, startPage + totalVisiblePages - 1)
+  const totalVisiblePages = 5
+  const totalPagesValue = totalPages.value
+  const currentPageValue = currentPage.value
 
+  let startPage = Math.max(1, currentPageValue - Math.floor(totalVisiblePages / 2))
+  console.log(startPage)
+  let endPage = Math.min(startPage + totalVisiblePages - 1, totalPagesValue)
+  console.log(endPage)
   if (endPage - startPage + 1 < totalVisiblePages) {
     startPage = Math.max(1, endPage - totalVisiblePages + 1)
   }
 
   const pages = []
+
   for (let i = startPage; i <= endPage; i++) {
     pages.push(i)
   }
@@ -114,7 +118,7 @@ const visiblePages = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col bg-white p-8  w-full m-4 gap-2">
+  <div class="container">
     <div v-if="firtsLoad" class="flex justify-between">
       <div class="flex flex-col">
         <h1>Empleados</h1>
@@ -161,41 +165,43 @@ const visiblePages = computed(() => {
         <div class="col-span-1">
           <div>
             <CustomDropDown
+              dropDirection="top-14"
               placeholder="Nombre de cargo"
               :value="selectedValue"
               :options="filterOptions"
               @update:modelValue="updateSelectedValue"
-            />
+            >
+              <IconDownArrow />
+            </CustomDropDown>
           </div>
         </div>
       </div>
-      <CustomTable class="" :datalist="dataList" :isloaded="isLoaded" />
+      <CustomTable :datalist="dataList" :isloaded="isLoaded" />
     </div>
-    <div class="grid grid-cols-2 gap-4 items-center " v-if="totalPages > 1">
+    <div class="grid grid-cols-2 gap-4 items-center" v-if="totalPages > 1">
       <div class="flex col-span-1 gap-2 justify-center">
         <div class="flex items-center justify-center">
           <CustomButton
-            customClass="border border-gray-200 p-2"
+            customClass="custom-arrow "
             @click="handlePageChange(listStore.changePage(-1))"
             :disabled="currentPage === 1"
           >
             <IconLeftArrow />
           </CustomButton>
 
-          <div v-for="item in visiblePages" :key="item" class=" space-x-2">
+          <div v-for="item in visiblePages" :key="item">
             <CustomButton
-              
-              :customClass=" 'border border-gray-200 mx-auto p-2 '"
-              @click="goToPage(item)"
+              :customClass="item === currentPage ? 'is-active' : 'm-2 py-2 px-4 text-gray-900'"
+              @click="handlePageChange(0, item)"
               :disabled="currentPage === item"
-              :active="currentPage === item"
+              :active="item === currentPage"
             >
               {{ item }}
             </CustomButton>
           </div>
 
           <CustomButton
-            customClass="border border-gray-200 p-2"
+            customClass="custom-arrow"
             @click="handlePageChange(listStore.changePage(1))"
             :disabled="currentPage === totalPages"
           >
@@ -206,23 +212,33 @@ const visiblePages = computed(() => {
 
       <div class="col-span-1 flex justify-end">
         <div class="flex items-center justify-between gap-4">
-          <span class=""
+          <span class="text-gray-500"
             >Mostrando {{ dataList.length ? 1 : 0 }} a {{ dataList.length }} de
-            {{ total }} registros</span
-          >
+            {{ total }} registros
+          </span>
           <CustomDropDown
-            class="w-24"
+            dropDirection="-top-28"
             :value="itemsPerPage"
             :options="countPerPage"
             @update:modelValue="updatePerPage"
-          />
+            label="Mostrar"
+          >
+            <IconUpArrow />
+          </CustomDropDown>
         </div>
       </div>
     </div>
   </div>
 </template>
-<style>
-.footer{
+
+<style scoped>
+.container {
+  @apply flex flex-col bg-white p-8 w-full m-4 gap-2;
+  border-width: 3px;
+  border-radius: 20px;
+  border-color: transparent;
+}
+.footer {
   @apply mt-4 flex items-center justify-center;
 }
 h1 {
@@ -241,20 +257,10 @@ p {
   @apply border px-6 h-14;
   border-color: #e03137;
 }
-.pagination {
-  @apply mt-4 flex items-center justify-center space-x-2;
-}
-.pagination button{
-  @apply px-2 py-1 rounded-md bg-gray-50 cursor-pointer;
+.custom-arrow {
+  @apply border px-2 my-2 border-gray-200;
 }
 .is-active {
-  @apply border border-gray-200 mx-auto p-2 bg-emerald-600 text-white
-}
-.pagination button {
-  @apply px-2 py-1 rounded-md bg-gray-50 cursor-pointer;
-}
-
-.pagination button:disabled {
-  @apply bg-gray-300 cursor-not-allowed;
+  @apply m-2 py-2 px-4 bg-gray-100 text-gray-900 rounded-2xl;
 }
 </style>

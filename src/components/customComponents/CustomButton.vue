@@ -1,5 +1,9 @@
 <script setup lang="ts">
-const { label, customClass, active } = defineProps(['label', 'customClass', 'active'])
+const { label, customClass, active,  } = defineProps([
+  'label',
+  'customClass',
+  'active',
+])
 </script>
 
 <template>
@@ -15,7 +19,6 @@ const { label, customClass, active } = defineProps(['label', 'customClass', 'act
 }
 
 .active {
-  @apply text-emerald-600 ;
+  /* @apply text-emerald-600 ; */
 }
-
 </style>
