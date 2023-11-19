@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 import CustomButton from '../customComponents/CustomButton.vue'
 import IconWatch from '../icons/IconWatch.vue'
 import IconEdit from '../icons/IconEdit.vue'
 import IconRemove from '../icons/IconRemove.vue'
+import CustomModal from './CustomModal.vue'
 
 const headers = ['Nombre', 'Nombre Cargo', 'Departamento', 'Oficina', 'Cuenta']
 const columns = [
@@ -15,10 +16,22 @@ const columns = [
   { key: 'estadoCuenta' },
   { key: 'acciones' }
 ]
-const props = defineProps(['isloaded', 'datalist'])
-
+const show = ref(false)
+const props = defineProps(['isloaded', 'datalist', 'datum'])
+const emits = defineEmits(['remove:removeItem', 'edit:editItem', 'close:closeModal'])
 const isLoaded = computed(() => props.isloaded)
 const dataList = computed(() => props.datalist)
+const remove = (id: number) => {
+  emits('remove:removeItem', id)
+}
+const edit = (id: number) => {
+  emits('edit:editItem', id)
+  show.value = true
+}
+const closeModal = () => {
+  emits('close:closeModal')
+  show.value = false
+}
 </script>
 
 <template>
@@ -48,10 +61,10 @@ const dataList = computed(() => props.datalist)
                 <CustomButton>
                   <IconWatch />
                 </CustomButton>
-                <CustomButton>
+                <CustomButton @click="edit(item.id)">
                   <IconEdit />
                 </CustomButton>
-                <CustomButton>
+                <CustomButton @click="remove(item.id)">
                   <IconRemove />
                 </CustomButton>
               </div>
@@ -87,11 +100,12 @@ const dataList = computed(() => props.datalist)
       </div>
     </div>
   </div>
+  <CustomModal title="Editar" :show="show" @close:close-modal="closeModal" />
 </template>
 
 <style scoped>
 .table-container {
-  @apply overflow-auto;  
+  @apply overflow-auto;
   height: 470px;
 }
 td {

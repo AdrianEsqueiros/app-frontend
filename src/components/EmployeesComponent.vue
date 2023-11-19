@@ -32,12 +32,33 @@ onMounted(async () => {
     console.error('Error al cargar la lista de empleados:', error.message)
   }
 })
+
 const total = computed(() => listStore.total)
 const totalPages = computed(() => listStore.totalPages)
 const currentPage = computed(() => listStore.currentPage)
 const isLoaded = computed(() => listStore.isDataLoaded)
 const dataList = computed(() => listStore.filteredDataList)
+const datum = computed(() => listStore.datum)
 const filterOptions = computed(() => listStore.optionsFilter)
+const visiblePages = computed(() => {
+  const totalVisiblePages = 5
+  const totalPagesValue = totalPages.value
+  const currentPageValue = currentPage.value
+
+  let startPage = Math.max(1, currentPageValue - Math.floor(totalVisiblePages / 2))
+  let endPage = Math.min(startPage + totalVisiblePages - 1, totalPagesValue)
+  if (endPage - startPage + 1 < totalVisiblePages) {
+    startPage = Math.max(1, endPage - totalVisiblePages + 1)
+  }
+
+  const pages = []
+
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i)
+  }
+
+  return pages
+})
 
 const changeItemsPerPage = async (value: any) => {
   itemsPerPage.value = value
@@ -72,6 +93,7 @@ const updateSelectedValue = (value: any) => {
   selectedValue.value = value
   filterList()
 }
+
 const filterList = () => {
   if (selectedValue.value) {
     listStore.filterByCargo(selectedValue.value)
@@ -94,27 +116,14 @@ const clearFilters = () => {
   listStore.resetFilter()
 }
 
-const visiblePages = computed(() => {
-  const totalVisiblePages = 5
-  const totalPagesValue = totalPages.value
-  const currentPageValue = currentPage.value
+const removeItem = (value: any) => {
+  listStore.removeItem(value)
+}
 
-  let startPage = Math.max(1, currentPageValue - Math.floor(totalVisiblePages / 2))
-  console.log(startPage)
-  let endPage = Math.min(startPage + totalVisiblePages - 1, totalPagesValue)
-  console.log(endPage)
-  if (endPage - startPage + 1 < totalVisiblePages) {
-    startPage = Math.max(1, endPage - totalVisiblePages + 1)
-  }
-
-  const pages = []
-
-  for (let i = startPage; i <= endPage; i++) {
-    pages.push(i)
-  }
-
-  return pages
-})
+const editItem = (value: any) => {
+  listStore.editItem(value)
+  console.log(datum.value)
+}
 </script>
 
 <template>
@@ -176,7 +185,12 @@ const visiblePages = computed(() => {
           </div>
         </div>
       </div>
-      <CustomTable :datalist="dataList" :isloaded="isLoaded" />
+      <CustomTable
+        :datalist="dataList"
+        :isloaded="isLoaded"
+        @edit:edit-item="editItem"
+        @remove:remove-item="removeItem"
+      />
     </div>
     <div class="grid grid-cols-2 gap-4 items-center" v-if="totalPages > 1">
       <div class="flex col-span-1 gap-2 justify-center">

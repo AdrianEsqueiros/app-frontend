@@ -2,6 +2,7 @@
 import { defineStore } from 'pinia'
 import { getListData } from '@/api'
 import type { Datum } from '@/types'
+import { Oficina, EstadoCuenta } from '../types/types';
 
 interface ListState {
   dataList: Datum[]
@@ -11,7 +12,11 @@ interface ListState {
   currentPage: number
   itemsPerPage: number
   total:number
-  optionsFilter: string[]
+  optionsFilter: string[],
+  datum: Datum,
+  Oficina: Oficina,
+  EstadoCuenta: EstadoCuenta
+
 }
 
 const initialListState: ListState = {
@@ -22,7 +27,18 @@ const initialListState: ListState = {
   isDataLoaded: false,
   currentPage: 1,
   itemsPerPage: 5,
-  optionsFilter: []
+  optionsFilter: [],
+  Oficina: Oficina.CulqiOffice,
+  EstadoCuenta: EstadoCuenta.Activada,
+  datum: {
+    id: 0,
+    nombre: '',
+    correo: '',
+    cargo: '',
+    departamento: '',
+    oficina: Oficina.CulqiOffice,
+    estadoCuenta: EstadoCuenta.Activada
+  }
 }
 
 export const useListStore = defineStore({
@@ -82,7 +98,13 @@ export const useListStore = defineStore({
       }
       return this.currentPage
     },
-
+    editItem(id: number): void {
+      this.datum = this.dataList.find((item) => item.id === id)!                        
+    },
+    removeItem(id: number): void {
+      this.dataList = this.dataList.filter((item) => item.id !== id)
+      this.filteredDataList = this.filteredDataList.filter((item) => item.id !== id)
+    }
 
     
   }
